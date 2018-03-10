@@ -43,16 +43,16 @@ function createObjects(mtx=matrix) {
   for (var y = 0; y < mtx.length; y++) {
     for (var x = 0; x < mtx[y].length; x++) {
       if (mtx[y][x] == 1) {
-        grassArr.push(new Grass(x, y));
+        grassArr.push(new Grass(x, y, 1));
       }
       else if (mtx[y][x] == 2) {
-        xotakerArr.push(new Xotaker(x, y));
+        xotakerArr.push(new Xotaker(x, y, 2));
       }
       else if (mtx[y][x] == 3) {
-        gishatichArr.push(new Gishatich(x, y));
+        gishatichArr.push(new Gishatich(x, y, 3));
       }
       else if (mtx[y][x] == 4) {
-        amenakerArr.push(new Amenaker(x, y));
+        amenakerArr.push(new Amenaker(x, y, 4));
       }
     }
   }
@@ -61,7 +61,6 @@ function createObjects(mtx=matrix) {
 function drawGrid(mtx=matrix) {
   for (var y = 0; y < mtx.length; y++) {
     for (var x = 0; x < mtx[y].length; x++) {
-      noStroke();
       if (mtx[y][x] == 0) {
         fill('#acacac');
         rect(x * side, y * side, side, side);
