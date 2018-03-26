@@ -29,7 +29,7 @@ class Animal extends Organism {
             for (var i in this.targetArr[ti]) {
                 var target = this.targetArr[ti][i];
                 if (target.x == this.x && target.y == this.y) {
-                    this.targetArr.splice(i, 1);
+                    this.targetArr[ti].splice(i, 1);
                     return true;
                 }
             }

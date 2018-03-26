@@ -18,9 +18,7 @@ class Gishatich extends Animal {
   evolve() {
     if (!this.eat()) {
       if (!this.reproduce()) {
-        if (!this.move()) {
-          this.die();
-        };
+        this.move();
       }
     }
   }
