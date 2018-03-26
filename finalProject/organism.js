@@ -1,13 +1,13 @@
 class Organism {
-    constructor(x, y, index, onReproduction) {
+    constructor(x, y, index, array) {
         this.x = x;
         this.y = y;
         this.index = index;
-        this.onReproduction = onReproduction;
-        this.directions = this.getDirections();
+        this.array = array;
+        this.directions = [];
     }
-    getDirections() {
-        return [
+    getNewDirections() {
+        this.directions = [
             [this.x - 1, this.y - 1],
             [this.x, this.y - 1],
             [this.x + 1, this.y - 1],
@@ -19,6 +19,7 @@ class Organism {
         ];
     }
     chooseCell(ch) {
+        this.getNewDirections();
         var found = [];
         for (var i = 0; i < this.directions.length; i++) {
             var x = this.directions[i][0];
@@ -30,12 +31,27 @@ class Organism {
         return found;
     }
     reproduce() {
+        if (this.gender && this.gender != 0) {
+            return false;
+        }
+        if (this.energy < 3) {
+            return false;
+        }
         var cell = random(this.chooseCell(0));
         if (cell) {
             var x = cell[0];
             var y = cell[1];
             matrix[y][x] = this.index;
-            this.onReproduction(x, y);
+            return this.onReproduction(x, y);
+        }
+    }
+    die() {
+        matrix[this.y][this.x] = 0;
+        for (var i in this.array) {
+            if (this.array[i].x == this.x && this.array[i].y == this.y) {
+                this.array.splice(i, 1);
+                return true;
+            }
         }
     }
 }

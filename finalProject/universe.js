@@ -6,7 +6,7 @@ var grassArr = [];
 var xotakerArr = [];
 var gishatichArr = [];
 var amenakerArr = [];
-var weather = 0;
+var weather = 4;
 
 
 function fillMatrix(width, height) {
@@ -14,10 +14,11 @@ function fillMatrix(width, height) {
   for (var y = 0; y < width; y++) {
     m.push([]);
     for (var x = 0; x < height; x++) {
-      m[y].push(0);
+      m[y].push(random([0, 1, 2, 3]));
+      //m[y].push(0);
     }
-    m[0][0] = 1;
   }
+  m[0][0] = 3;
   return m;
 }
 
@@ -80,13 +81,10 @@ function populate() {
     grassArr[i].evolve();
   }
   for (var i in xotakerArr) {
-    xotakerArr[i].hunt();
+    xotakerArr[i].evolve();
   }
   for (var i in gishatichArr) {
-    gishatichArr[i].hunt();
-  }
-  for (var i in amenakerArr) {
-    amenakerArr[i].hunt();
+    gishatichArr[i].evolve();
   }
   drawGrid();
 }
