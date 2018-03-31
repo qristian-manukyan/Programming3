@@ -6,7 +6,7 @@ var grassArr = [];
 var xotakerArr = [];
 var gishatichArr = [];
 var amenakerArr = [];
-var weather = 0;
+var weather = 4;
 
 
 function fillMatrix(width, height) {
@@ -14,10 +14,14 @@ function fillMatrix(width, height) {
   for (var y = 0; y < width; y++) {
     m.push([]);
     for (var x = 0; x < height; x++) {
+      //m[y].push(random([0, 1, 2, 3, 4]));
       m[y].push(0);
     }
-    m[0][0] = 1;
   }
+  m[0][0] = 1;
+  m[0][5] = 2;
+  m[4][5] = 2;
+  m[4][7] = 2;
   return m;
 }
 
@@ -52,7 +56,20 @@ function drawGrid(mtx=matrix) {
         rect(x * side, y * side, side, side);
       }
       else if (mtx[y][x] == 1) {
-        fill('green');
+        switch(weather) {
+          case(0):
+            fill('white');
+            break;
+          case(1):
+            fill('#00ff00');
+            break;
+          case(2):
+            fill('green');
+            break;
+          default:
+            fill('orange');
+            break;
+        }
         rect(x * side, y * side, side, side);
       }
       else if (mtx[y][x] == 2) {
@@ -75,18 +92,29 @@ function drawGrid(mtx=matrix) {
   }
 }
 
+var weatherCount = 0;
+
 function populate() {
+  weatherCount++;
+  if (weatherCount == 4) {
+    weather++;
+    weatherCount = 0;
+  }
   for (var i in grassArr) {
     grassArr[i].evolve();
   }
   for (var i in xotakerArr) {
-    xotakerArr[i].hunt();
+    xotakerArr[i].evolve();
   }
   for (var i in gishatichArr) {
-    gishatichArr[i].hunt();
+    gishatichArr[i].evolve();
   }
   for (var i in amenakerArr) {
-    amenakerArr[i].hunt();
+    amenakerArr[i].evolve();
+  }
+  weatherCount++;
+  if (weatherCount == 4) {
+    weatherCount = 0;
   }
   drawGrid();
 }
