@@ -1,39 +1,62 @@
 class Animal extends Organism {
-    constructor(x, y, index, array, gender, eats, targetArr) {
-        super(x, y, index, array);
+    constructor(x, y, index, gender, eats, energy) {
+        super(x, y, index);
         this.gender = gender;
         this.eats = eats;
-        this.targetArr = targetArr;
-        this.energy = 1;
+        this.energy = energy;
     }
     move() {
-        var cell = random(this.chooseCell(0));
-        if (cell) {
-            this.moveTo(cell[0], cell[1]);
-        }
-    }
-    moveTo(newX, newY) {
-        matrix[this.y][this.x] = 0;
-        this.x = newX;
-        this.y = newY;
-        matrix[this.y][this.x] = this.index;
+      var cell = random(this.chooseNearbyCell(0));
+      if (cell) {
+        this.changeCoordinates(cell[0], cell[1]);
+        return true;
+      }
+      return false;
     }
     eat() {
-        for (var ti in this.eats) {
-            var targetCoords = random(this.chooseCell(this.eats[ti]));
-            if (!targetCoords) {
-                continue;
-            }
-            this.moveTo(targetCoords[0], targetCoords[1]);
-            this.energy++;
-            for (var i in this.targetArr[ti]) {
-                var target = this.targetArr[ti][i];
-                if (target.x == this.x && target.y == this.y) {
-                    this.targetArr[ti].splice(i, 1);
-                    return true;
-                }
-            }
+      for (var i in this.eats) {
+        var targetIndex = this.eats[i];
+        var target = random(this.chooseNearbyCreature(targetIndex));
+        if (!target) {
+          continue;
         }
+        this.energy++;
+        myUniverse.removeCreature(target.x, target.y);
+        this.changeCoordinates(target.x, target.y);
+      }
+      this.energy--;
+      return false;
+    }
+    reproduce() {
+      if (this.gender != 0) {
         return false;
+      }
+      var partner = this.chooseNearbyCreature(this.index);
+      if (partner.gender == 1) {
+        var cell = random(this.chooseNearbyCell(0));
+        if (cell) {
+          myUniverse.addCreature(this.index, cell[0], cell[1]);
+          return true;
+        }
+        var creature = random(this.chooseNearbyCreature(1));
+        if (creature) {
+          creature.die();
+          myUniverse.addCreature(this.index, cell[0], cell[1]);
+          return true;
+        }
+      }
+      return false;
+    }
+    live() {
+      if (!this.eat()) {
+        if (!this.reproduce()) {
+          if (!this.move()) {
+            this.energy--;
+            if (this.energy <= 0) {
+              this.die();
+            }
+          }
+        }
+      }
     }
 }

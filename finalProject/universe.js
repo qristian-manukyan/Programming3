@@ -1,120 +1,89 @@
-var matrix = [];
-var side = 20;
-var w = 28;
-var h = w;
-var grassArr = [];
-var xotakerArr = [];
-var gishatichArr = [];
-var amenakerArr = [];
-var weather = 4;
-
-
-function fillMatrix(width, height) {
-  var m = [];
-  for (var y = 0; y < width; y++) {
-    m.push([]);
-    for (var x = 0; x < height; x++) {
-      //m[y].push(random([0, 1, 2, 3, 4]));
-      m[y].push(0);
-    }
+var Universe = class Universe {
+  constructor(creatureConsts, width=25, height=25, cellSize=15, colors) {
+    this.width = width;
+    this.height = height;
+    this.cellSize = cellSize;
+    this.matrix = this.generateEmptyMatrix(this.width, this.height);
+    this.creatureConsts = creatureConsts;
+    this.creatures = [];
+    this.colors = colors || ['#acacac', 'green', 'yellow', 'red', 'brown'];
   }
-  m[0][0] = 1;
-  m[0][5] = 2;
-  m[4][5] = 2;
-  m[4][7] = 2;
-  return m;
-}
-
-function createObjects(mtx=matrix) {
-  grassArr = [];
-  xotakerArr = [];
-  gishatichArr = [];
-  for (var y = 0; y < mtx.length; y++) {
-    for (var x = 0; x < mtx[y].length; x++) {
-      if (mtx[y][x] == 1) {
-        grassArr.push(new Grass(x, y));
+  generateEmptyMatrix(width, height) {
+    var mtx = [];
+    for (var y = 0; y < width; y++) {
+      mtx.push([]);
+      for (var x = 0; x < height; x++) {
+        mtx[y].push(0);
       }
-      else if (mtx[y][x] == 2) {
-        xotakerArr.push(new Xotaker(x, y));
-      }
-      else if (mtx[y][x] == 3) {
-        gishatichArr.push(new Gishatich(x, y));
-      }
-      else if (mtx[y][x] == 4) {
-        amenakerArr.push(new Amenaker(x, y));
+    }
+    return mtx;
+  }
+  changeMatrix(x, y, val) {
+    this.matrix[y][x] = val;
+    this.drawGrid();
+  }
+  drawGrid() {
+    background(this.colors[0]);
+    for (var y = 0; y < this.height; y++) {
+      for (var x = 0; x < this.width; x++) {
+        var index = this.matrix[y][x];
+        fill(this.colors[index]);
+        rect(x * this.cellSize, y * this.cellSize, this.cellSize / 1.1, this.cellSize / 1.1);
       }
     }
   }
-}
-
-function drawGrid(mtx=matrix) {
-  for (var y = 0; y < mtx.length; y++) {
-    for (var x = 0; x < mtx[y].length; x++) {
-      //noStroke();
-      if (mtx[y][x] == 0) {
-        fill('#acacac');
-        rect(x * side, y * side, side, side);
+  findCreatureByCoordinates(x, y) {
+    for (var i in this.creatures) {
+      var creature = this.creatures[i];
+      if (creature.x == x && creature.y == y) {
+        return [creature, i];
       }
-      else if (mtx[y][x] == 1) {
-        switch(weather) {
-          case(0):
-            fill('white');
-            break;
-          case(1):
-            fill('#00ff00');
-            break;
-          case(2):
-            fill('green');
-            break;
-          default:
-            fill('orange');
-            break;
+    }
+    return false;
+  }
+  filterCreatures(data) {
+    var found = [];
+    for (var i in this.creatures) {
+      var creature = this.creatures[i];
+      for (var j in data) {
+        if (creature[j] == data[j]) {
+          found.push(creature);
         }
-        rect(x * side, y * side, side, side);
-      }
-      else if (mtx[y][x] == 2) {
-        fill('yellow');
-        rect(x * side, y * side, side, side);
-      }
-      else if (mtx[y][x] == 3) {
-        fill('red');
-        rect(x * side, y * side, side, side);
-      }
-      else if (mtx[y][x] == 4) {
-        fill('brown');
-        rect(x * side, y * side, side, side);
-      }
-      else {
-        fill('blue');
-        rect(x * side, y * side, side, side);
+        continue;
       }
     }
+    return found;
   }
-}
-
-var weatherCount = 0;
-
-function populate() {
-  weatherCount++;
-  if (weatherCount == 4) {
-    weather++;
-    weatherCount = 0;
+  addCreature(index, x, y) {
+    var creatureConst = this.creatureConsts[index-1];
+    this.removeCreature(x, y);
+    this.creatures.push(new window[creatureConst.name](x, y));
+    this.changeMatrix(x, y, index);
   }
-  for (var i in grassArr) {
-    grassArr[i].evolve();
+  removeCreature(x, y) {
+    var creatureData = this.findCreatureByCoordinates(x, y);
+    if (creatureData) {
+      this.creatures.splice(creatureData[1], 1);
+      this.changeMatrix(x, y, 0);
+      return true;
+    }
+    return false;
   }
-  for (var i in xotakerArr) {
-    xotakerArr[i].evolve();
+  addPopulation(index, count) {
+    var n = count;
+    while (n > 0) {
+      var creatureConst = this.creatureConsts[index-1];
+      var x = random(range(0, this.width));
+      var y = random(range(0, this.height));
+      this.addCreature(index, x, y);
+      n--;
+    }
+    this.drawGrid();
   }
-  for (var i in gishatichArr) {
-    gishatichArr[i].evolve();
+  populate() {
+    for (var i = 0; i < this.creatures.length; i++) {
+      this.creatures[i].live();
+    }
+    this.drawGrid();
   }
-  for (var i in amenakerArr) {
-    amenakerArr[i].evolve();
-  }
-  weatherCount++;
-  if (weatherCount == 4) {
-    weatherCount = 0;
-  }
-  drawGrid();
 }

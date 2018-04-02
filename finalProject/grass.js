@@ -1,19 +1,15 @@
-class Grass extends Organism {
+var Grass = class Grass extends Organism {
   constructor(x, y) {
-    super(x, y, 1, grassArr);
-    this.multiplyCount = 0;
-    this.multiplyRange = 4;
+    super(x, y, 1);
+    this.count = 0;
+    this.range = 8;
+    this.speed = 4;
   }
-  onReproduction(newX, newY) {
-    this.array.push(new Grass(newX, newY));
-  }
-  evolve() {
-    this.reproductionSpeed = window.weather;
-    if (this.multiplyCount < this.multiplyRange) {
-      this.multiplyCount += this.reproductionSpeed;
-      return;
+  live() {
+    this.count += this.speed;
+    if (this.count == this.range) {
+      this.count = 0;
+      this.reproduce();
     }
-    this.multiplyCount = 0;
-    this.reproduce();
   }
 }
